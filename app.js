@@ -1,7 +1,8 @@
 /* ==========================================================================
    THE PODIUM  —  app.js
-   Spin a prompt on the wheel, pick a mode, take prep time, run the clock,
-   capture speech, hit your target words, grow a word bank. No server, no keys.
+   Draw a prompt (it rises under the spotlight), pick a mode, take prep time,
+   run the clock, capture speech, hit your target words, grow a word bank.
+   No server, no keys.
    ========================================================================== */
 
 (function () {
@@ -15,10 +16,9 @@
     spotlight: $("spotlight"),
     greetText: $("greetText"), editName: $("editName"),
     modes: $("modes"), modeHint: $("modeHint"),
-    typeFilter: $("typeFilter"), bankCount: $("bankCount"),
-    catSelect: $("catSelect"),
-    wheel: $("wheel"), reelTrack: $("reelTrack"), drawBtn: $("drawBtn"),
-    stage: $("stage"), catLabel: $("catLabel"), taskText: $("taskText"),
+    typeFilter: $("typeFilter"), bankCount: $("bankCount"), catSelect: $("catSelect"),
+    drawBtn: $("drawBtn"),
+    stage: $("stage"), marquee: $("marquee"), catLabel: $("catLabel"), taskText: $("taskText"),
     durRow: $("durRow"), prepRow: $("prepRow"),
     timer: $("timer"), ringFill: $("ringFill"),
     timerDisplay: $("timerDisplay"), timerPhase: $("timerPhase"),
@@ -40,7 +40,6 @@
   };
 
   const RING_LEN = 339.29;
-  const ITEM_H = 58;                 // matches .reel-item height in CSS
   const DURATIONS = [1, 2, 3, 5];
   const PREPS = [["Off", 0], ["15s", 15], ["30s", 30], ["60s", 60]];
   const FILLERS = ["um", "uh", "er", "erm", "like", "you know", "sort of",
@@ -57,7 +56,6 @@
   let targetSeconds = 60, remaining = 60, prepSeconds = 0;
   let phase = "idle";
   let ticking = null;
-  let spinning = false;
   let recognition = null, recording = false, recStart = 0, finalTranscript = "";
   let targetWords = [], featuredWord = null;
 
@@ -118,68 +116,32 @@
     el.bankCount.textContent = label + " in the bank \u00B7 " + VOCAB.length + " words to master";
   }
 
-  // ==== WHEEL / SPIN ====================================================
+  // ==== DRAW + REVEAL ===================================================
   function pool() {
     return TOPICS.filter((t) =>
       (activeCategory === "All" || t.category === activeCategory) &&
       (activeType === "all" || t.type === activeType));
   }
-  function centerOffset() { return (el.wheel.clientHeight || 320) / 2 - ITEM_H / 2; }
-  function idleWheel() {
-    el.reelTrack.style.transition = "none";
-    el.reelTrack.innerHTML = "";
-    const d = document.createElement("div"); d.className = "reel-item pick"; d.textContent = "Ready when you are";
-    el.reelTrack.appendChild(d);
-    el.reelTrack.style.transform = "translateY(" + centerOffset() + "px)";
-  }
-  function spin() {
-    if (spinning) return;
+  function draw() {
     const p = pool();
     if (!p.length) return;
-    spinning = true; el.drawBtn.disabled = true;
-    el.wheel.classList.remove("settled"); el.wheel.classList.add("spinning");
-    el.spotlight.classList.add("lit");
-
     let chosen = p[Math.floor(Math.random() * p.length)];
     if (p.length > 1) { let g = 0; while (currentTopic && chosen.task === currentTopic.task && g < 20) { chosen = p[Math.floor(Math.random() * p.length)]; g++; } }
-
-    const N = 26, landing = N - 3;
-    const items = [];
-    for (let i = 0; i < N; i++) items.push(i === landing ? chosen : p[Math.floor(Math.random() * p.length)]);
-    el.reelTrack.innerHTML = "";
-    items.forEach((t, i) => {
-      const d = document.createElement("div");
-      d.className = "reel-item" + (i === landing ? " pick" : "");
-      d.textContent = t.task;
-      el.reelTrack.appendChild(d);
-    });
-
-    const start = centerOffset();
-    el.reelTrack.style.transition = "none";
-    el.reelTrack.style.transform = "translateY(" + start + "px)";
-    void el.reelTrack.offsetHeight; // reflow
-    const target = start - landing * ITEM_H;
-    el.reelTrack.style.transition = "transform 2.8s cubic-bezier(0.16,0.84,0.24,1)";
-    el.reelTrack.style.transform = "translateY(" + target + "px)";
-
-    let finished = false;
-    const done = () => {
-      if (finished) return; finished = true;
-      el.reelTrack.removeEventListener("transitionend", done);
-      el.wheel.classList.remove("spinning"); el.wheel.classList.add("settled");
-      spinning = false; el.drawBtn.disabled = false;
-      currentTopic = chosen; render(chosen);
-    };
-    el.reelTrack.addEventListener("transitionend", done);
-    setTimeout(done, 3100); // fallback (also covers reduced-motion)
+    currentTopic = chosen;
+    render(chosen);
   }
-
   function render(t) {
     const isConcept = t.type === "concept";
     el.stage.hidden = false;
     el.stage.style.setProperty("--cat", catVar(t.category));
     el.catLabel.textContent = t.category + " \u00B7 " + (isConcept ? "Concept" : "Question");
     el.taskText.textContent = t.task;
+
+    // replay the spotlight reveal
+    el.marquee.classList.remove("show");
+    void el.marquee.offsetWidth;
+    el.marquee.classList.add("show");
+    el.spotlight.classList.add("lit");
 
     applyMode();
     el.brSummary.textContent = t.summary;
@@ -420,13 +382,12 @@
     renderGreeting(); populateCatSelect(); buildPrepRow(); initSpeech();
     showFeatured(); renderSaved(); renderHistory();
     setMode("cuff"); setType("all");
-    requestAnimationFrame(idleWheel);
 
     el.editName.addEventListener("click", editName);
     Array.from(el.modes.children).forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
     Array.from(el.typeFilter.children).forEach((b) => b.addEventListener("click", () => setType(b.dataset.type)));
     el.catSelect.addEventListener("change", () => { activeCategory = el.catSelect.value; renderBankCount(); });
-    el.drawBtn.addEventListener("click", spin);
+    el.drawBtn.addEventListener("click", draw);
     el.startBtn.addEventListener("click", startTimer);
     el.resetBtn.addEventListener("click", () => setDuration(targetSeconds / 60));
     el.recordBtn.addEventListener("click", toggleRecording);
@@ -436,8 +397,7 @@
     el.anotherWord.addEventListener("click", () => showFeatured());
     el.wbClear.addEventListener("click", () => { if (confirm("Clear your saved words?")) { store.set(KEY_VOCAB, []); renderSaved(); showFeatured(featuredWord); } });
 
-    document.addEventListener("keydown", (e) => { if (e.code === "Space" && e.target === document.body) { e.preventDefault(); spin(); } });
-    window.addEventListener("resize", () => { if (!spinning && el.stage.hidden) idleWheel(); });
+    document.addEventListener("keydown", (e) => { if (e.code === "Space" && e.target === document.body) { e.preventDefault(); draw(); } });
   }
   document.addEventListener("DOMContentLoaded", init);
 })();

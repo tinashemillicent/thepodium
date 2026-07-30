@@ -14,34 +14,23 @@
     <span class="blob b1"></span>
     <span class="blob b2"></span>
     <span class="blob b3"></span>
-    <span class="blob b4"></span>
   </div>
   <div class="spotlight" id="spotlight" aria-hidden="true"></div>
 
   <main class="wrap">
 
-    <!-- HERO: brand | generator -->
-    <section class="hero">
-      <div class="brand">
-        <p class="the">THE</p>
-        <h1 class="podium">Podium</h1>
-        <p class="lead">A personal stage for thinking out loud. Spin a prompt, beat the clock, and sharpen how you speak.</p>
-        <p class="greeting" id="greeting">
-          <span id="greetText">Step up.</span>
-          <button class="edit-name" id="editName" aria-label="Set your name">edit</button>
-        </p>
-      </div>
-
-      <div class="generator">
-        <div class="wheel glass" id="wheel">
-          <div class="reel" id="reel"><div class="reel-track" id="reelTrack"></div></div>
-          <div class="wheel-band" aria-hidden="true"></div>
-          <div class="wheel-glow" aria-hidden="true"></div>
-        </div>
-        <button class="draw" id="drawBtn">Spin the podium</button>
-        <p class="spin-hint">or tap <kbd>space</kbd></p>
-      </div>
-    </section>
+    <!-- HERO: wordmark front and centre -->
+    <header class="hero">
+      <p class="the">THE</p>
+      <h1 class="podium">Podium</h1>
+      <p class="lead">A personal stage for thinking out loud. Draw a prompt, beat the clock, and sharpen how you speak.</p>
+      <p class="greeting" id="greeting">
+        <span id="greetText">Step up.</span>
+        <button class="edit-name" id="editName" aria-label="Set your name">edit</button>
+      </p>
+      <button class="draw" id="drawBtn">Draw a prompt</button>
+      <p class="spin-hint">or tap <kbd>space</kbd></p>
+    </header>
 
     <!-- CONTROLS -->
     <section class="controls glass">
@@ -70,8 +59,11 @@
 
     <!-- STAGE -->
     <section class="stage" id="stage" hidden>
-      <p class="eyebrow" id="catLabel">Category</p>
-      <h2 class="task" id="taskText">Task</h2>
+      <div class="marquee" id="marquee">
+        <div class="beam" aria-hidden="true"></div>
+        <p class="eyebrow" id="catLabel">Category</p>
+        <h2 class="task" id="taskText">Task</h2>
+      </div>
 
       <div class="stage-grid">
         <div class="panel glass timer-panel">
