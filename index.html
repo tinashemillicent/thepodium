@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>The Podium — pull the lever, start talking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shapes" aria-hidden="true">
+    <span class="shape s1"></span>
+    <span class="shape s2"></span>
+    <span class="shape s3"></span>
+    <span class="shape s4"></span>
+    <span class="shape s5"></span>
+    <span class="shape s6"></span>
+    <span class="shape s7"></span>
+  </div>
+  <main class="wrap">
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="wordmark">
+        <span class="the">THE</span>
+        <span class="pod">Podium</span>
+      </div>
+      <p class="lead">Pull the lever, take the topic you're dealt, and talk.</p>
+      <p class="greeting" id="greeting">
+        <span id="greetText">Step up.</span>
+        <button class="edit-name" id="editName" aria-label="Set your name">edit</button>
+      </p>
+    </header>
+
+    <!-- SLOT MACHINE -->
+    <section class="machine">
+      <div class="slot soft">
+        <div class="slot-window inset">
+          <div class="reel" id="reelTrack"></div>
+          <div class="slot-band" aria-hidden="true"></div>
+        </div>
+        <button class="lever" id="lever" aria-label="Pull the lever">
+          <span class="lever-arm"><span class="lever-knob"></span></span>
+          <span class="lever-base"></span>
+        </button>
+      </div>
+      <button class="pull-btn" id="drawBtn">Pull the lever</button>
+      <p class="spin-hint">or tap <kbd>space</kbd></p>
+    </section>
+
+    <!-- CONTROLS -->
+    <section class="controls soft">
+      <div class="ctl">
+        <span class="ctl-label">Mode</span>
+        <div class="seg" id="modes" role="group" aria-label="Practice mode">
+          <button class="seg-btn" data-mode="cuff" aria-pressed="true">Off the Cuff</button>
+          <button class="seg-btn" data-mode="research" aria-pressed="false">Deep Research</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <span class="ctl-label">Type</span>
+        <div class="seg" id="typeFilter" role="group" aria-label="Prompt type">
+          <button class="seg-btn" data-type="all" aria-pressed="true">All</button>
+          <button class="seg-btn" data-type="question" aria-pressed="false">Questions</button>
+          <button class="seg-btn" data-type="concept" aria-pressed="false">Concepts</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <span class="ctl-label">Category</span>
+        <select class="cat-select" id="catSelect" aria-label="Category"></select>
+      </div>
+      <p class="bank-count" id="bankCount"></p>
+      <p class="mode-hint" id="modeHint"></p>
+    </section>
+
+    <!-- STAGE -->
+    <section class="stage" id="stage" hidden>
+      <div class="marquee" id="marquee">
+        <p class="eyebrow" id="catLabel">Category</p>
+        <h2 class="task" id="taskText">Task</h2>
+      </div>
+
+      <div class="stage-grid">
+        <div class="panel soft timer-panel">
+          <div class="timer" id="timer">
+            <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="ring-track" cx="60" cy="60" r="54" />
+              <circle class="ring-fill" id="ringFill" cx="60" cy="60" r="54" />
+            </svg>
+            <div class="timer-read"><span id="timerDisplay">00:00</span></div>
+            <div class="timer-phase" id="timerPhase"></div>
+          </div>
+          <div class="dur-row" id="durRow" role="group" aria-label="Set length"></div>
+          <div class="prep-row" id="prepRow" role="group" aria-label="Prep time"></div>
+          <div class="timer-btns">
+            <button class="btn primary" id="startBtn">Start</button>
+            <button class="btn ghost" id="resetBtn">Reset</button>
+          </div>
+        </div>
+
+        <div class="panel soft speak-panel">
+          <div class="vocab-challenge inset" id="vocabChallenge" hidden>
+            <p class="vc-title">Work these words in</p>
+            <div class="vc-words" id="vcWords"></div>
+          </div>
+          <button class="btn record" id="recordBtn">Record my answer</button>
+          <p class="speak-note" id="speakNote"></p>
+          <div class="metrics" id="metrics" hidden>
+            <div class="metric inset"><span class="m-num" id="mWpm">-</span><span class="m-lab">words / min</span></div>
+            <div class="metric inset"><span class="m-num" id="mWords">-</span><span class="m-lab">words</span></div>
+            <div class="metric inset"><span class="m-num" id="mFillers">-</span><span class="m-lab">fillers</span></div>
+          </div>
+          <details class="transcript-wrap" id="transcriptWrap" hidden>
+            <summary>Transcript</summary>
+            <p class="transcript" id="transcript"></p>
+          </details>
+          <div class="rate" id="rate">
+            <p class="rate-title">Rate yourself</p>
+            <label>Clarity <input type="range" min="1" max="5" value="3" id="rClarity" /></label>
+            <label>Structure <input type="range" min="1" max="5" value="3" id="rStructure" /></label>
+            <label>Confidence <input type="range" min="1" max="5" value="3" id="rConfidence" /></label>
+            <label>Depth <input type="range" min="1" max="5" value="3" id="rDepth" /></label>
+            <button class="btn primary wide" id="saveBtn">Log this session</button>
+          </div>
+        </div>
+      </div>
+
+      <details class="briefing soft" id="briefing">
+        <summary>Open the briefing <span class="hint">- try it cold first, then learn</span></summary>
+        <div class="briefing-body">
+          <p class="br-summary" id="brSummary"></p>
+          <div class="br-cols">
+            <div>
+              <h3 id="brPHeading">Main points</h3>
+              <ul id="brPoints"></ul>
+            </div>
+            <div>
+              <h3 id="brQHeading">Interrogate yourself</h3>
+              <ul id="brQuestions"></ul>
+            </div>
+          </div>
+          <p class="br-counter" id="brCounter" hidden></p>
+        </div>
+      </details>
+
+      <section class="research soft" id="research" hidden>
+        <div class="research-head">
+          <h3>Scout the research</h3>
+          <span class="research-sub">real papers, without leaving the app</span>
+        </div>
+        <div class="research-search">
+          <input type="text" id="researchQuery" class="research-input" placeholder="Search a topic..." />
+          <button class="btn primary" id="scoutBtn">Find papers</button>
+        </div>
+        <div class="research-results" id="researchResults"></div>
+        <div class="wiki-card inset" id="wikiCard" hidden></div>
+        <div class="research-links" id="researchLinks"></div>
+      </section>
+    </section>
+
+    <!-- WORD BANK -->
+    <section class="wordbank soft" id="wordbank">
+      <div class="wb-head">
+        <h2>Build your vocabulary</h2>
+        <button class="btn tiny ghost" id="anotherWord">Another word</button>
+      </div>
+      <div class="wb-feature inset" id="wbFeature">
+        <div class="wb-word-line">
+          <span class="wb-word" id="wbWord">word</span>
+          <span class="wb-pos" id="wbPos">pos</span>
+          <button class="wb-save" id="wbSave">Save</button>
+        </div>
+        <p class="wb-def" id="wbDef">definition</p>
+        <p class="wb-ex" id="wbEx">example</p>
+      </div>
+      <div class="wb-saved" id="wbSaved" hidden>
+        <p class="wb-saved-title"><span id="wbCount">0</span> saved · <button class="link-btn" id="wbClear">clear</button></p>
+        <div class="wb-chips" id="wbChips"></div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="history soft" id="history" hidden>
+      <div class="hist-head">
+        <h2>Your reps</h2>
+        <button class="btn tiny ghost" id="clearHist">Clear</button>
+      </div>
+      <div class="hist-stats">
+        <div class="inset"><span class="hs-num" id="histCount">0</span><span class="hs-lab">sessions</span></div>
+        <div class="inset"><span class="hs-num" id="histStreak">0</span><span class="hs-lab">day streak</span></div>
+        <div class="inset"><span class="hs-num" id="histMinutes">0</span><span class="hs-lab">minutes spoken</span></div>
+      </div>
+      <ul class="hist-list" id="histList"></ul>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <p>Built to be spoken at. Your words and history stay on this device.</p>
+  </footer>
+
+  <script src="topics.js"></script>
+  <script src="vocab.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
