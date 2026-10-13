@@ -47,7 +47,7 @@
   const PREPS = [["Off", 0], ["15s", 15], ["30s", 30], ["60s", 60]];
   const FILLERS = ["um", "uh", "er", "erm", "like", "you know", "sort of",
                    "kind of", "i mean", "basically", "actually", "literally", "so"];
-  const DEFAULT_NAME = "Tatenda";
+  const DEFAULT_NAME = "Friend";
   const KEY_NAME = "podium.name";
   const KEY_HIST = "podium.history.v1";
   const KEY_VOCAB = "podium.vocab.v1";
